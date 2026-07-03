@@ -456,7 +456,7 @@
                                                     "results": [
                                                         {
                                                             "timestamp": "2026-07-02T06:49:32Z",
-                                                            "state": "DEGRADED"
+                                                            "state": "CRITICAL"
                                                         }
                                                     ]
                                                 },
@@ -976,9 +976,9 @@
                                         },
                                         {
                                             "name": "argo-msg",
-                                            "status": "DEGRADED",
+                                            "status": "CRITICAL",
                                             "metrics": {
-                                                "availability": 100,
+                                                "availability": 80,
                                                 "uptime": 97.2
                                             },
                                             "downtimes": [],
@@ -1271,8 +1271,9 @@
                         "type": "string",
                         "enum": [
                             "OK",
-                            "DEGRADED",
-                            "DOWN",
+                            "WARNING",
+                            "CRITICAL",
+                            "DOWNTIME",
                             "UNKNOWN"
                         ],
                         "example": "OK"
@@ -1392,8 +1393,9 @@
                         "description": "Current status of the item.",
                         "enum": [
                             "OK",
-                            "DEGRADED",
-                            "DOWN",
+                            "WARNING",
+                            "CRITICAL",
+                            "DOWNTIME",
                             "UNKNOWN"
                         ],
                         "example": "OK"
