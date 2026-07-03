@@ -260,7 +260,7 @@
                 }
             }
         },
-        "/monitoring/details/metrics/{item-name}/children/{child-name}": {
+        "/monitoring/details/metrics/{item-name}/{child-name}": {
             "get": {
                 "tags": [
                     "metrics"
@@ -456,7 +456,7 @@
                                                     "results": [
                                                         {
                                                             "timestamp": "2026-07-02T06:49:32Z",
-                                                            "state": "CRITICAL"
+                                                            "state": "DEGRADED"
                                                         }
                                                     ]
                                                 },
@@ -512,7 +512,7 @@
                 }
             }
         },
-        "/monitoring/details/status/{item-name}/children/{child-name}": {
+        "/monitoring/details/status/{item-name}/{child-name}": {
             "get": {
                 "tags": [
                     "status"
@@ -694,7 +694,7 @@
                 }
             }
         },
-        "/monitoring/details/downtimes/{item-name}/children/{child-name}": {
+        "/monitoring/details/downtimes/{item-name}/{child-name}": {
             "get": {
                 "tags": [
                     "downtimes"
@@ -881,7 +881,7 @@
                 }
             }
         },
-        "/monitoring/details/issues/{item-name}/children/{child-name}": {
+        "/monitoring/details/issues/{item-name}/{child-name}": {
             "get": {
                 "tags": [
                     "issues"
@@ -976,9 +976,9 @@
                                         },
                                         {
                                             "name": "argo-msg",
-                                            "status": "CRITICAL",
+                                            "status": "DEGRADED",
                                             "metrics": {
-                                                "availability": 80,
+                                                "availability": 100,
                                                 "uptime": 97.2
                                             },
                                             "downtimes": [],
@@ -1271,9 +1271,8 @@
                         "type": "string",
                         "enum": [
                             "OK",
-                            "WARNING",
-                            "CRITICAL",
-                            "DOWNTIME",
+                            "DEGRADED",
+                            "DOWN",
                             "UNKNOWN"
                         ],
                         "example": "OK"
@@ -1393,9 +1392,8 @@
                         "description": "Current status of the item.",
                         "enum": [
                             "OK",
-                            "WARNING",
-                            "CRITICAL",
-                            "DOWNTIME",
+                            "DEGRADED",
+                            "DOWN",
                             "UNKNOWN"
                         ],
                         "example": "OK"
@@ -1652,6 +1650,7 @@
         }
     }
 }
+
               window.onload = () => {
         SwaggerUIBundle({
           spec: spec,
