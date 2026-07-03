@@ -15,8 +15,630 @@
     <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
     <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
     <script>
-      const spec = {"openapi": "3.0.3", "info": {"title": "Monitoring API", "description": "API for retrieving availability, uptime metrics and status timelines for monitored items.\n", "version": "1.0.0"}, "servers": [{"url": "https://api.example.com"}], "tags": [{"name": "metrics", "description": "Availability and uptime results"}, {"name": "status", "description": "Current and historical status (state) of monitored items"}], "paths": {"/monitoring/metrics": {"get": {"tags": ["metrics"], "summary": "List metrics across multiple items", "description": "Returns metrics for all items, or for a filtered subset via `item` and/or `search`. Supports either a single `date` or a `start-date`/`end-date` range (mutually exclusive). `granularity` and `metric` apply only to this route.\n", "parameters": [{"$ref": "#/components/parameters/ItemFilter"}, {"$ref": "#/components/parameters/SearchFilter"}, {"$ref": "#/components/parameters/Date"}, {"$ref": "#/components/parameters/StartDate"}, {"$ref": "#/components/parameters/EndDate"}, {"$ref": "#/components/parameters/Granularity"}, {"$ref": "#/components/parameters/MetricFilter"}], "responses": {"200": {"description": "Metrics results", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MetricsResponse"}, "example": {"data": [{"name": "Service A", "results": [{"date": "2026-07-02", "availability": 100, "uptime": 97.5}]}, {"name": "Service B", "results": [{"date": "2026-07-02", "availability": 100, "uptime": 99.1}]}]}}}}, "400": {"$ref": "#/components/responses/BadRequest"}}}}, "/monitoring/metrics/{item}": {"get": {"tags": ["metrics"], "summary": "Get metrics for a single item", "description": "Shorthand for `/monitoring/metrics?item={item}`. Supports either a single `date` or a `start-date`/`end-date` range (mutually exclusive, not both). `granularity` applies only to range queries.\n", "parameters": [{"$ref": "#/components/parameters/ItemPath"}, {"$ref": "#/components/parameters/Date"}, {"$ref": "#/components/parameters/StartDate"}, {"$ref": "#/components/parameters/EndDate"}, {"$ref": "#/components/parameters/Granularity"}, {"$ref": "#/components/parameters/MetricFilter"}], "responses": {"200": {"description": "Metrics results for the item", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MetricsResponse"}, "example": {"data": [{"name": "Service A", "results": [{"date": "2026-07-02", "availability": 100, "uptime": 97.5}]}]}}}}, "400": {"$ref": "#/components/responses/BadRequest"}, "404": {"$ref": "#/components/responses/NotFound"}}}}, "/monitoring/status": {"get": {"tags": ["status"], "summary": "List status across multiple items", "description": "Returns current status for all items, or a filtered subset via `item` and/or `search`. Supplying `start-date`/`end-date` returns the status timeline over that range instead of the current state. `granularity` and `metric` do not apply to this route.\n", "parameters": [{"$ref": "#/components/parameters/ItemFilter"}, {"$ref": "#/components/parameters/SearchFilter"}, {"$ref": "#/components/parameters/Date"}, {"$ref": "#/components/parameters/StartDate"}, {"$ref": "#/components/parameters/EndDate"}], "responses": {"200": {"description": "Status results", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/StatusResponse"}, "example": {"data": [{"name": "Service A", "results": [{"timestamp": "2026-07-02T06:49:32Z", "state": "OK"}]}, {"name": "Service B", "results": [{"timestamp": "2026-07-02T06:49:32Z", "state": "OK"}]}]}}}}, "400": {"$ref": "#/components/responses/BadRequest"}}}}, "/monitoring/status/{item}": {"get": {"tags": ["status"], "summary": "Get status for a single item", "description": "Shorthand for `/monitoring/status?item={item}`. With no date params, returns the current state (one result). With `start-date`/`end-date`, returns the status timeline over that range (multiple results). `granularity` and `metric` do not apply.\n", "parameters": [{"$ref": "#/components/parameters/ItemPath"}, {"$ref": "#/components/parameters/Date"}, {"$ref": "#/components/parameters/StartDate"}, {"$ref": "#/components/parameters/EndDate"}], "responses": {"200": {"description": "Status results for the item", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/StatusResponse"}, "example": {"data": [{"name": "Service A", "results": [{"timestamp": "2026-07-02T06:49:32Z", "state": "OK"}]}]}}}}, "400": {"$ref": "#/components/responses/BadRequest"}, "404": {"$ref": "#/components/responses/NotFound"}}}}}, "components": {"parameters": {"ItemPath": {"name": "item", "in": "path", "required": true, "description": "Identifier of the monitored item.", "schema": {"type": "string"}, "example": "service-a"}, "ItemFilter": {"name": "item", "in": "query", "required": false, "description": "Filter to one or more specific items by exact identifier. Repeat the parameter for multiple items.\n", "style": "form", "explode": true, "schema": {"type": "array", "items": {"type": "string"}}, "example": ["service-a", "service-b"]}, "SearchFilter": {"name": "search", "in": "query", "required": false, "description": "Substring match on item name (fuzzy search, not exact).", "schema": {"type": "string"}, "example": "catalogue"}, "Date": {"name": "date", "in": "query", "required": false, "description": "A single date to query. Mutually exclusive with `start-date` / `end-date`.\n", "schema": {"type": "string", "format": "date"}, "example": "2026-06-01"}, "StartDate": {"name": "start-date", "in": "query", "required": false, "description": "Start of a date range. Must be supplied together with `end-date`. Mutually exclusive with `date`.\n", "schema": {"type": "string", "format": "date"}, "example": "2026-06-01"}, "EndDate": {"name": "end-date", "in": "query", "required": false, "description": "End of a date range. Must be supplied together with `start-date`. Mutually exclusive with `date`.\n", "schema": {"type": "string", "format": "date"}, "example": "2026-06-30"}, "Granularity": {"name": "granularity", "in": "query", "required": false, "description": "Aggregation interval for range queries. Applies only to `/monitoring/metrics` routes; not supported on `/monitoring/status`.\n", "schema": {"type": "string", "enum": ["daily", "monthly"]}}, "MetricFilter": {"name": "metric", "in": "query", "required": false, "description": "Filter to one or more metric types. Repeat the parameter for multiple types. Omit to receive all metric types. Applies only to `/monitoring/metrics` routes.\n", "style": "form", "explode": true, "schema": {"type": "array", "items": {"type": "string", "enum": ["availability", "uptime"]}}, "example": ["availability", "uptime"]}}, "schemas": {"MetricsResponse": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/ItemMetrics"}}}}, "ItemMetrics": {"type": "object", "properties": {"name": {"type": "string", "description": "Human-readable item name.", "example": "Service A"}, "results": {"type": "array", "items": {"$ref": "#/components/schemas/MetricResult"}}}}, "MetricResult": {"type": "object", "properties": {"date": {"type": "string", "format": "date", "example": "2026-07-02"}, "availability": {"type": "number", "format": "double", "description": "Percentage, 0-100 scale.", "example": 100}, "uptime": {"type": "number", "format": "double", "description": "Percentage, 0-100 scale.", "example": 97.5}}}, "StatusResponse": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/ItemStatus"}}}}, "ItemStatus": {"type": "object", "properties": {"name": {"type": "string", "description": "Human-readable item name.", "example": "Service A"}, "results": {"type": "array", "description": "A single entry when no date range is given (current state), or multiple entries ordered by timestamp when `start-date`/ `end-date` is given (status timeline).\n", "items": {"$ref": "#/components/schemas/StatusResult"}}}}, "StatusResult": {"type": "object", "properties": {"timestamp": {"type": "string", "format": "date-time", "example": "2026-07-02T06:49:32Z"}, "state": {"type": "string", "enum": ["OK", "DEGRADED", "DOWN", "UNKNOWN"], "example": "OK"}}}, "Error": {"type": "object", "properties": {"message": {"type": "string"}, "code": {"type": "string"}}}}, "responses": {"BadRequest": {"description": "Invalid parameter combination (e.g. both `date` and `start-date` supplied, or `start-date` without `end-date`).\n", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "NotFound": {"description": "Item not found.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}}}};
-      window.onload = () => {
+      const spec = {{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Monitoring API",
+        "description": "API for retrieving availability, uptime metrics and status timelines for monitored items and their subitems.\n\nCurrent item / subitem hierarchy:\n\n* argo-mon\n  * argo-mon-ui\n  * argo-mon-api\n  * argo-mon-engine\n  * argo-mon-box\n  * database\n  * distributed-storage\n* argo-msg\n  * argo-msg-ui\n  * argo-msg-api\n  * database\n  * message-queue\n* argo-acc\n  * argo-acc-api\n  * argo-acc-ui\n  * database\n",
+        "version": "2.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://api.example.com"
+        }
+    ],
+    "tags": [
+        {
+            "name": "metrics",
+            "description": "Availability and uptime results"
+        },
+        {
+            "name": "status",
+            "description": "Current and historical status (state) of monitored items and subitems"
+        }
+    ],
+    "paths": {
+        "/monitoring/details/metrics": {
+            "get": {
+                "tags": ["metrics"],
+                "summary": "List metrics across multiple items",
+                "description": "Returns metrics for all top-level items, or for a filtered subset via `item` and/or `search`. Supports either a single `date` or a `start-date`/`end-date` range (mutually exclusive). `granularity` and `metric` apply only to this route family.\n",
+                "parameters": [
+                    { "$ref": "#/components/parameters/ItemFilter" },
+                    { "$ref": "#/components/parameters/SearchFilter" },
+                    { "$ref": "#/components/parameters/Date" },
+                    { "$ref": "#/components/parameters/StartDate" },
+                    { "$ref": "#/components/parameters/EndDate" },
+                    { "$ref": "#/components/parameters/Granularity" },
+                    { "$ref": "#/components/parameters/MetricFilter" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Metrics results",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/MetricsResponse" },
+                                "example": {
+                                    "data": [
+                                        {
+                                            "name": "argo-mon",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 97.5 }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-msg",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 99.1 }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-acc",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 99.8 }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" }
+                }
+            }
+        },
+        "/monitoring/details/metrics/{item-name}": {
+            "get": {
+                "tags": ["metrics"],
+                "summary": "Get metrics for a single item",
+                "description": "Shorthand for `/monitoring/details/metrics?item={item-name}`. Returns aggregate metrics for the item itself (not its subitems). Supports either a single `date` or a `start-date`/`end-date` range (mutually exclusive). `granularity` applies only to range queries.\n",
+                "parameters": [
+                    { "$ref": "#/components/parameters/ItemNamePath" },
+                    { "$ref": "#/components/parameters/Date" },
+                    { "$ref": "#/components/parameters/StartDate" },
+                    { "$ref": "#/components/parameters/EndDate" },
+                    { "$ref": "#/components/parameters/Granularity" },
+                    { "$ref": "#/components/parameters/MetricFilter" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Metrics results for the item",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/MetricsResponse" },
+                                "example": {
+                                    "data": [
+                                        {
+                                            "name": "argo-mon",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 97.5 }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            }
+        },
+        "/monitoring/details/metrics/{item-name}/subitems": {
+            "get": {
+                "tags": ["metrics"],
+                "summary": "List metrics across all subitems of an item",
+                "description": "Returns metrics for all subitems belonging to `item-name` (e.g. `argo-mon-ui`, `argo-mon-api`, ... for item `argo-mon`), or a filtered subset via `subitem` and/or `search`. Supports either a single `date` or a `start-date`/`end-date` range (mutually exclusive). `granularity` and `metric` apply only to this route.\n",
+                "parameters": [
+                    { "$ref": "#/components/parameters/ItemNamePath" },
+                    { "$ref": "#/components/parameters/SubItemFilter" },
+                    { "$ref": "#/components/parameters/SearchFilter" },
+                    { "$ref": "#/components/parameters/Date" },
+                    { "$ref": "#/components/parameters/StartDate" },
+                    { "$ref": "#/components/parameters/EndDate" },
+                    { "$ref": "#/components/parameters/Granularity" },
+                    { "$ref": "#/components/parameters/MetricFilter" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Metrics results for the item's subitems",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/MetricsResponse" },
+                                "example": {
+                                    "data": [
+                                        {
+                                            "name": "argo-mon-ui",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 98.2 }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-mon-api",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 99.4 }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-mon-engine",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 97.9 }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-mon-box",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 99.0 }
+                                            ]
+                                        },
+                                        {
+                                            "name": "database",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 99.9 }
+                                            ]
+                                        },
+                                        {
+                                            "name": "distributed-storage",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 98.7 }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            }
+        },
+        "/monitoring/details/metrics/{item-name}/{subitem-name}": {
+            "get": {
+                "tags": ["metrics"],
+                "summary": "Get metrics for a single subitem",
+                "description": "Shorthand for `/monitoring/details/metrics/{item-name}/subitems?subitem={subitem-name}`. Supports either a single `date` or a `start-date`/`end-date` range (mutually exclusive). `granularity` applies only to range queries.\n",
+                "parameters": [
+                    { "$ref": "#/components/parameters/ItemNamePath" },
+                    { "$ref": "#/components/parameters/SubItemNamePath" },
+                    { "$ref": "#/components/parameters/Date" },
+                    { "$ref": "#/components/parameters/StartDate" },
+                    { "$ref": "#/components/parameters/EndDate" },
+                    { "$ref": "#/components/parameters/Granularity" },
+                    { "$ref": "#/components/parameters/MetricFilter" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Metrics results for the subitem",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/MetricsResponse" },
+                                "example": {
+                                    "data": [
+                                        {
+                                            "name": "argo-mon-ui",
+                                            "results": [
+                                                { "date": "2026-07-02", "availability": 100, "uptime": 98.2 }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            }
+        },
+        "/monitoring/details/status": {
+            "get": {
+                "tags": ["status"],
+                "summary": "List status across multiple items",
+                "description": "Returns current status for all top-level items, or a filtered subset via `item` and/or `search`. Supplying `start-date`/`end-date` returns the status timeline over that range instead of the current state. `granularity` and `metric` do not apply to status routes.\n",
+                "parameters": [
+                    { "$ref": "#/components/parameters/ItemFilter" },
+                    { "$ref": "#/components/parameters/SearchFilter" },
+                    { "$ref": "#/components/parameters/Date" },
+                    { "$ref": "#/components/parameters/StartDate" },
+                    { "$ref": "#/components/parameters/EndDate" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status results",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/StatusResponse" },
+                                "example": {
+                                    "data": [
+                                        {
+                                            "name": "argo-mon",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-msg",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-acc",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" }
+                }
+            }
+        },
+        "/monitoring/details/status/{item-name}": {
+            "get": {
+                "tags": ["status"],
+                "summary": "Get status for a single item",
+                "description": "Shorthand for `/monitoring/details/status?item={item-name}`. With no date params, returns the current state of the item itself (one result). With `start-date`/`end-date`, returns the status timeline over that range (multiple results). `granularity` and `metric` do not apply.\n",
+                "parameters": [
+                    { "$ref": "#/components/parameters/ItemNamePath" },
+                    { "$ref": "#/components/parameters/Date" },
+                    { "$ref": "#/components/parameters/StartDate" },
+                    { "$ref": "#/components/parameters/EndDate" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status results for the item",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/StatusResponse" },
+                                "example": {
+                                    "data": [
+                                        {
+                                            "name": "argo-mon",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            }
+        },
+        "/monitoring/details/status/{item-name}/subitems": {
+            "get": {
+                "tags": ["status"],
+                "summary": "List status across all subitems of an item",
+                "description": "Returns current status for all subitems belonging to `item-name`, or a filtered subset via `subitem` and/or `search`. Supplying `start-date`/`end-date` returns the status timeline over that range for each subitem instead of the current state.\n",
+                "parameters": [
+                    { "$ref": "#/components/parameters/ItemNamePath" },
+                    { "$ref": "#/components/parameters/SubItemFilter" },
+                    { "$ref": "#/components/parameters/SearchFilter" },
+                    { "$ref": "#/components/parameters/Date" },
+                    { "$ref": "#/components/parameters/StartDate" },
+                    { "$ref": "#/components/parameters/EndDate" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status results for the item's subitems",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/StatusResponse" },
+                                "example": {
+                                    "data": [
+                                        {
+                                            "name": "argo-mon-ui",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-mon-api",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "DEGRADED" }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-mon-engine",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        },
+                                        {
+                                            "name": "argo-mon-box",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        },
+                                        {
+                                            "name": "database",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        },
+                                        {
+                                            "name": "distributed-storage",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            }
+        },
+        "/monitoring/details/status/{item-name}/{subitem-name}": {
+            "get": {
+                "tags": ["status"],
+                "summary": "Get status for a single subitem",
+                "description": "Shorthand for `/monitoring/details/status/{item-name}/subitems?subitem={subitem-name}`. With no date params, returns the current state (one result). With `start-date`/`end-date`, returns the status timeline over that range (multiple results).\n",
+                "parameters": [
+                    { "$ref": "#/components/parameters/ItemNamePath" },
+                    { "$ref": "#/components/parameters/SubItemNamePath" },
+                    { "$ref": "#/components/parameters/Date" },
+                    { "$ref": "#/components/parameters/StartDate" },
+                    { "$ref": "#/components/parameters/EndDate" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status results for the subitem",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/StatusResponse" },
+                                "example": {
+                                    "data": [
+                                        {
+                                            "name": "argo-mon-ui",
+                                            "results": [
+                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            }
+        }
+    },
+    "components": {
+        "parameters": {
+            "ItemNamePath": {
+                "name": "item-name",
+                "in": "path",
+                "required": true,
+                "description": "Identifier of the top-level monitored item.",
+                "schema": {
+                    "type": "string",
+                    "enum": ["argo-mon", "argo-msg", "argo-acc"]
+                },
+                "example": "argo-mon"
+            },
+            "SubItemNamePath": {
+                "name": "subitem-name",
+                "in": "path",
+                "required": true,
+                "description": "Identifier of the subitem, scoped to the parent `item-name` in the path.",
+                "schema": {
+                    "type": "string"
+                },
+                "example": "argo-mon-ui"
+            },
+            "ItemFilter": {
+                "name": "item",
+                "in": "query",
+                "required": false,
+                "description": "Filter to one or more specific top-level items by exact identifier. Repeat the parameter for multiple items.\n",
+                "style": "form",
+                "explode": true,
+                "schema": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "example": ["argo-mon", "argo-msg", "argo-acc"]
+            },
+            "SubItemFilter": {
+                "name": "subitem",
+                "in": "query",
+                "required": false,
+                "description": "Filter to one or more specific subitems by exact identifier, scoped to the parent `item-name` in the path. Repeat the parameter for multiple subitems.\n",
+                "style": "form",
+                "explode": true,
+                "schema": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "example": ["argo-mon-ui", "argo-mon-api"]
+            },
+            "SearchFilter": {
+                "name": "search",
+                "in": "query",
+                "required": false,
+                "description": "Substring match on item or subitem name (fuzzy search, not exact).",
+                "schema": { "type": "string" },
+                "example": "argo"
+            },
+            "Date": {
+                "name": "date",
+                "in": "query",
+                "required": false,
+                "description": "A single date to query. Mutually exclusive with `start-date` / `end-date`.\n",
+                "schema": { "type": "string", "format": "date" },
+                "example": "2026-06-01"
+            },
+            "StartDate": {
+                "name": "start-date",
+                "in": "query",
+                "required": false,
+                "description": "Start of a date range. Must be supplied together with `end-date`. Mutually exclusive with `date`.\n",
+                "schema": { "type": "string", "format": "date" },
+                "example": "2026-06-01"
+            },
+            "EndDate": {
+                "name": "end-date",
+                "in": "query",
+                "required": false,
+                "description": "End of a date range. Must be supplied together with `start-date`. Mutually exclusive with `date`.\n",
+                "schema": { "type": "string", "format": "date" },
+                "example": "2026-06-30"
+            },
+            "Granularity": {
+                "name": "granularity",
+                "in": "query",
+                "required": false,
+                "description": "Aggregation interval for range queries. Applies only to metrics routes; not supported on status routes.\n",
+                "schema": {
+                    "type": "string",
+                    "enum": ["daily", "monthly"]
+                }
+            },
+            "MetricFilter": {
+                "name": "metric",
+                "in": "query",
+                "required": false,
+                "description": "Filter to one or more metric types. Repeat the parameter for multiple types. Omit to receive all metric types. Applies only to metrics routes.\n",
+                "style": "form",
+                "explode": true,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": ["availability", "uptime"]
+                    }
+                },
+                "example": ["availability", "uptime"]
+            }
+        },
+        "schemas": {
+            "MetricsResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/ItemMetrics" }
+                    }
+                }
+            },
+            "ItemMetrics": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Identifier of the item or subitem these results belong to.",
+                        "example": "argo-mon"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/MetricResult" }
+                    }
+                }
+            },
+            "MetricResult": {
+                "type": "object",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-07-02"
+                    },
+                    "availability": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Percentage, 0-100 scale.",
+                        "example": 100
+                    },
+                    "uptime": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Percentage, 0-100 scale.",
+                        "example": 97.5
+                    }
+                }
+            },
+            "StatusResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/ItemStatus" }
+                    }
+                }
+            },
+            "ItemStatus": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Identifier of the item or subitem these results belong to.",
+                        "example": "argo-mon"
+                    },
+                    "results": {
+                        "type": "array",
+                        "description": "A single entry when no date range is given (current state), or multiple entries ordered by timestamp when `start-date`/`end-date` is given (status timeline).\n",
+                        "items": { "$ref": "#/components/schemas/StatusResult" }
+                    }
+                }
+            },
+            "StatusResult": {
+                "type": "object",
+                "properties": {
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-07-02T06:49:32Z"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": ["OK", "DEGRADED", "DOWN", "UNKNOWN"],
+                        "example": "OK"
+                    }
+                }
+            },
+            "Error": {
+                "type": "object",
+                "properties": {
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                }
+            }
+        },
+        "responses": {
+            "BadRequest": {
+                "description": "Invalid parameter combination (e.g. both `date` and `start-date` supplied, or `start-date` without `end-date`).\n",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/Error" }
+                    }
+                }
+            },
+            "NotFound": {
+                "description": "Item or subitem not found.",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/Error" }
+                    }
+                }
+            }
+        }
+    }
+}
+              window.onload = () => {
         SwaggerUIBundle({
           spec: spec,
           dom_id: '#swagger-ui',
