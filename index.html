@@ -23,54 +23,101 @@
         "version": "3.0.0"
     },
     "servers": [
-        { "url": "https://api.example.com" }
+        {
+            "url": "https://api.example.com"
+        }
     ],
     "tags": [
-        { "name": "metrics", "description": "Availability and uptime results" },
-        { "name": "status", "description": "Current and historical status (state) of monitored items and children" },
-        { "name": "downtimes", "description": "Scheduled or recorded downtime windows for monitored items and children" },
-        { "name": "issues", "description": "Recorded issues/incidents for monitored items and children" },
-        { "name": "summary", "description": "Combined at-a-glance status, metrics, downtimes and issues per item" }
+        {
+            "name": "metrics",
+            "description": "Availability and uptime results"
+        },
+        {
+            "name": "status",
+            "description": "Current and historical status (state) of monitored items and children"
+        },
+        {
+            "name": "downtimes",
+            "description": "Scheduled or recorded downtime windows for monitored items and children"
+        },
+        {
+            "name": "issues",
+            "description": "Recorded issues/incidents for monitored items and children"
+        },
+        {
+            "name": "summary",
+            "description": "Combined at-a-glance status, metrics, downtimes and issues per item"
+        }
     ],
     "paths": {
         "/monitoring/details/metrics": {
             "get": {
-                "tags": ["metrics"],
+                "tags": [
+                    "metrics"
+                ],
                 "summary": "List metrics across multiple items",
                 "description": "Returns metrics for all top-level items, or for a filtered subset via `item` and/or `search`. Supports either a single `date` or a `start-date`/`end-date` range (mutually exclusive). `granularity` and `metric` apply only to this route family.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemFilter" },
-                    { "$ref": "#/components/parameters/SearchFilter" },
-                    { "$ref": "#/components/parameters/Date" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" },
-                    { "$ref": "#/components/parameters/Granularity" },
-                    { "$ref": "#/components/parameters/MetricFilter" }
+                    {
+                        "$ref": "#/components/parameters/ItemFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Date"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Granularity"
+                    },
+                    {
+                        "$ref": "#/components/parameters/MetricFilter"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Metrics results",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/MetricsResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/MetricsListResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
                                             "name": "argo-mon",
                                             "results": [
-                                                { "date": "2026-07-02", "availability": 100, "uptime": 97.5 }
+                                                {
+                                                    "date": "2026-07-02",
+                                                    "availability": 100,
+                                                    "uptime": 97.5
+                                                }
                                             ]
                                         },
                                         {
                                             "name": "argo-msg",
                                             "results": [
-                                                { "date": "2026-07-02", "availability": 100, "uptime": 99.1 }
+                                                {
+                                                    "date": "2026-07-02",
+                                                    "availability": 100,
+                                                    "uptime": 99.1
+                                                }
                                             ]
                                         },
                                         {
                                             "name": "argo-acc",
                                             "results": [
-                                                { "date": "2026-07-02", "availability": 100, "uptime": 99.8 }
+                                                {
+                                                    "date": "2026-07-02",
+                                                    "availability": 100,
+                                                    "uptime": 99.8
+                                                }
                                             ]
                                         }
                                     ]
@@ -78,73 +125,123 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    }
                 }
             }
         },
         "/monitoring/details/metrics/{item-name}": {
             "get": {
-                "tags": ["metrics"],
+                "tags": [
+                    "metrics"
+                ],
                 "summary": "Get metrics for a single item, including its children",
                 "description": "Shorthand for `/monitoring/details/metrics?name={item-name}`. Returns the item's own aggregate metrics together with a `children` array covering each of its children in the same call, so no separate request is needed to see the breakdown. Use `name` and/or `search` to filter which children are included. Supports either a single `date` or a `start-date`/`end-date` range (mutually exclusive). `granularity` applies only to range queries.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemNamePath" },
-                    { "$ref": "#/components/parameters/ChildFilter" },
-                    { "$ref": "#/components/parameters/SearchFilter" },
-                    { "$ref": "#/components/parameters/Date" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" },
-                    { "$ref": "#/components/parameters/Granularity" },
-                    { "$ref": "#/components/parameters/MetricFilter" }
+                    {
+                        "$ref": "#/components/parameters/ItemNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ChildFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Date"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Granularity"
+                    },
+                    {
+                        "$ref": "#/components/parameters/MetricFilter"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Metrics results for the item and its children",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/MetricsResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/MetricsItemResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
                                             "name": "argo-mon",
                                             "results": [
-                                                { "date": "2026-07-02", "availability": 100, "uptime": 97.5 }
+                                                {
+                                                    "date": "2026-07-02",
+                                                    "availability": 100,
+                                                    "uptime": 97.5
+                                                }
                                             ],
                                             "children": [
                                                 {
                                                     "name": "argo-mon-ui",
                                                     "results": [
-                                                        { "date": "2026-07-02", "availability": 100, "uptime": 98.2 }
+                                                        {
+                                                            "date": "2026-07-02",
+                                                            "availability": 100,
+                                                            "uptime": 98.2
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "argo-mon-api",
                                                     "results": [
-                                                        { "date": "2026-07-02", "availability": 100, "uptime": 99.4 }
+                                                        {
+                                                            "date": "2026-07-02",
+                                                            "availability": 100,
+                                                            "uptime": 99.4
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "argo-mon-engine",
                                                     "results": [
-                                                        { "date": "2026-07-02", "availability": 100, "uptime": 97.9 }
+                                                        {
+                                                            "date": "2026-07-02",
+                                                            "availability": 100,
+                                                            "uptime": 97.9
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "argo-mon-box",
                                                     "results": [
-                                                        { "date": "2026-07-02", "availability": 100, "uptime": 99.0 }
+                                                        {
+                                                            "date": "2026-07-02",
+                                                            "availability": 100,
+                                                            "uptime": 99.0
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "database",
                                                     "results": [
-                                                        { "date": "2026-07-02", "availability": 100, "uptime": 99.9 }
+                                                        {
+                                                            "date": "2026-07-02",
+                                                            "availability": 100,
+                                                            "uptime": 99.9
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "distributed-storage",
                                                     "results": [
-                                                        { "date": "2026-07-02", "availability": 100, "uptime": 98.7 }
+                                                        {
+                                                            "date": "2026-07-02",
+                                                            "availability": 100,
+                                                            "uptime": 98.7
+                                                        }
                                                     ]
                                                 }
                                             ]
@@ -154,37 +251,63 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" },
-                    "404": { "$ref": "#/components/responses/NotFound" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
                 }
             }
         },
         "/monitoring/details/metrics/{item-name}/children/{child-name}": {
             "get": {
-                "tags": ["metrics"],
+                "tags": [
+                    "metrics"
+                ],
                 "summary": "Get metrics for a single child",
                 "description": "Shorthand for `/monitoring/details/metrics/{item-name}?name={child-name}`, returning only that child's entry. Supports either a single `date` or a `start-date`/`end-date` range (mutually exclusive). `granularity` applies only to range queries.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemNamePath" },
-                    { "$ref": "#/components/parameters/ChildNamePath" },
-                    { "$ref": "#/components/parameters/Date" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" },
-                    { "$ref": "#/components/parameters/Granularity" },
-                    { "$ref": "#/components/parameters/MetricFilter" }
+                    {
+                        "$ref": "#/components/parameters/ItemNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ChildNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Date"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Granularity"
+                    },
+                    {
+                        "$ref": "#/components/parameters/MetricFilter"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Metrics results for the child",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/MetricsResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/MetricsListResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
                                             "name": "argo-mon-ui",
                                             "results": [
-                                                { "date": "2026-07-02", "availability": 100, "uptime": 98.2 }
+                                                {
+                                                    "date": "2026-07-02",
+                                                    "availability": 100,
+                                                    "uptime": 98.2
+                                                }
                                             ]
                                         }
                                     ]
@@ -192,47 +315,74 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" },
-                    "404": { "$ref": "#/components/responses/NotFound" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
                 }
             }
         },
         "/monitoring/details/status": {
             "get": {
-                "tags": ["status"],
+                "tags": [
+                    "status"
+                ],
                 "summary": "List status across multiple items",
                 "description": "Returns current status for all top-level items, or a filtered subset via `item` and/or `search`. Supplying `start-date`/`end-date` returns the status timeline over that range instead of the current state. `granularity` and `metric` do not apply to status routes.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemFilter" },
-                    { "$ref": "#/components/parameters/SearchFilter" },
-                    { "$ref": "#/components/parameters/Date" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" }
+                    {
+                        "$ref": "#/components/parameters/ItemFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Date"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Status results",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/StatusResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/StatusListResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
                                             "name": "argo-mon",
                                             "results": [
-                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                {
+                                                    "timestamp": "2026-07-02T06:49:32Z",
+                                                    "state": "OK"
+                                                }
                                             ]
                                         },
                                         {
                                             "name": "argo-msg",
                                             "results": [
-                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                {
+                                                    "timestamp": "2026-07-02T06:49:32Z",
+                                                    "state": "OK"
+                                                }
                                             ]
                                         },
                                         {
                                             "name": "argo-acc",
                                             "results": [
-                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                {
+                                                    "timestamp": "2026-07-02T06:49:32Z",
+                                                    "state": "OK"
+                                                }
                                             ]
                                         }
                                     ]
@@ -240,71 +390,110 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    }
                 }
             }
         },
         "/monitoring/details/status/{item-name}": {
             "get": {
-                "tags": ["status"],
+                "tags": [
+                    "status"
+                ],
                 "summary": "Get status for a single item, including its children",
                 "description": "Shorthand for `/monitoring/details/status?name={item-name}`. Returns the item's own status together with a `children` array covering each of its children in the same call. Use `name` and/or `search` to filter which children are included. With no date params, returns the current state (one result per entry). With `start-date`/`end-date`, returns the status timeline over that range (multiple results per entry). `granularity` and `metric` do not apply.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemNamePath" },
-                    { "$ref": "#/components/parameters/ChildFilter" },
-                    { "$ref": "#/components/parameters/SearchFilter" },
-                    { "$ref": "#/components/parameters/Date" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" }
+                    {
+                        "$ref": "#/components/parameters/ItemNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ChildFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Date"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Status results for the item and its children",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/StatusResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/StatusItemResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
                                             "name": "argo-mon",
                                             "results": [
-                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                {
+                                                    "timestamp": "2026-07-02T06:49:32Z",
+                                                    "state": "OK"
+                                                }
                                             ],
                                             "children": [
                                                 {
                                                     "name": "argo-mon-ui",
                                                     "results": [
-                                                        { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                        {
+                                                            "timestamp": "2026-07-02T06:49:32Z",
+                                                            "state": "OK"
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "argo-mon-api",
                                                     "results": [
-                                                        { "timestamp": "2026-07-02T06:49:32Z", "state": "DEGRADED" }
+                                                        {
+                                                            "timestamp": "2026-07-02T06:49:32Z",
+                                                            "state": "DEGRADED"
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "argo-mon-engine",
                                                     "results": [
-                                                        { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                        {
+                                                            "timestamp": "2026-07-02T06:49:32Z",
+                                                            "state": "OK"
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "argo-mon-box",
                                                     "results": [
-                                                        { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                        {
+                                                            "timestamp": "2026-07-02T06:49:32Z",
+                                                            "state": "OK"
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "database",
                                                     "results": [
-                                                        { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                        {
+                                                            "timestamp": "2026-07-02T06:49:32Z",
+                                                            "state": "OK"
+                                                        }
                                                     ]
                                                 },
                                                 {
                                                     "name": "distributed-storage",
                                                     "results": [
-                                                        { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                        {
+                                                            "timestamp": "2026-07-02T06:49:32Z",
+                                                            "state": "OK"
+                                                        }
                                                     ]
                                                 }
                                             ]
@@ -314,35 +503,56 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" },
-                    "404": { "$ref": "#/components/responses/NotFound" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
                 }
             }
         },
         "/monitoring/details/status/{item-name}/children/{child-name}": {
             "get": {
-                "tags": ["status"],
+                "tags": [
+                    "status"
+                ],
                 "summary": "Get status for a single child",
                 "description": "Shorthand for `/monitoring/details/status/{item-name}?name={child-name}`, returning only that child's entry. With no date params, returns the current state (one result). With `start-date`/`end-date`, returns the status timeline over that range (multiple results).\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemNamePath" },
-                    { "$ref": "#/components/parameters/ChildNamePath" },
-                    { "$ref": "#/components/parameters/Date" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" }
+                    {
+                        "$ref": "#/components/parameters/ItemNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ChildNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Date"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Status results for the child",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/StatusResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/StatusListResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
                                             "name": "argo-mon-ui",
                                             "results": [
-                                                { "timestamp": "2026-07-02T06:49:32Z", "state": "OK" }
+                                                {
+                                                    "timestamp": "2026-07-02T06:49:32Z",
+                                                    "state": "OK"
+                                                }
                                             ]
                                         }
                                     ]
@@ -350,28 +560,44 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" },
-                    "404": { "$ref": "#/components/responses/NotFound" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
                 }
             }
         },
         "/monitoring/details/downtimes": {
             "get": {
-                "tags": ["downtimes"],
+                "tags": [
+                    "downtimes"
+                ],
                 "summary": "List downtimes across multiple items",
                 "description": "Returns recorded downtime windows for all top-level items, or a filtered subset via `item` and/or `search`. `start-date`/`end-date` filter to downtimes overlapping that range.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemFilter" },
-                    { "$ref": "#/components/parameters/SearchFilter" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" }
+                    {
+                        "$ref": "#/components/parameters/ItemFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Downtime results",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/DowntimesResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/DowntimesListResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
@@ -390,28 +616,44 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    }
                 }
             }
         },
         "/monitoring/details/downtimes/{item-name}": {
             "get": {
-                "tags": ["downtimes"],
+                "tags": [
+                    "downtimes"
+                ],
                 "summary": "Get downtimes for a single item, including its children",
                 "description": "Shorthand for `/monitoring/details/downtimes?name={item-name}`. Returns downtime windows recorded against the item itself, together with a `children` array covering each of its children in the same call. Use `name` and/or `search` to filter which children are included.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemNamePath" },
-                    { "$ref": "#/components/parameters/ChildFilter" },
-                    { "$ref": "#/components/parameters/SearchFilter" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" }
+                    {
+                        "$ref": "#/components/parameters/ItemNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ChildFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Downtime results for the item and its children",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/DowntimesResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/DowntimesItemResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
@@ -443,28 +685,44 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" },
-                    "404": { "$ref": "#/components/responses/NotFound" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
                 }
             }
         },
         "/monitoring/details/downtimes/{item-name}/children/{child-name}": {
             "get": {
-                "tags": ["downtimes"],
+                "tags": [
+                    "downtimes"
+                ],
                 "summary": "Get downtimes for a single child",
                 "description": "Shorthand for `/monitoring/details/downtimes/{item-name}?name={child-name}`, returning only that child's entry.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemNamePath" },
-                    { "$ref": "#/components/parameters/ChildNamePath" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" }
+                    {
+                        "$ref": "#/components/parameters/ItemNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ChildNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Downtime results for the child",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/DowntimesResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/DowntimesListResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
@@ -483,28 +741,44 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" },
-                    "404": { "$ref": "#/components/responses/NotFound" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
                 }
             }
         },
         "/monitoring/details/issues": {
             "get": {
-                "tags": ["issues"],
+                "tags": [
+                    "issues"
+                ],
                 "summary": "List issues across multiple items",
                 "description": "Returns recorded issues/incidents for all top-level items, or a filtered subset via `item` and/or `search`. `start-date`/`end-date` filter to issues timestamped within that range.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemFilter" },
-                    { "$ref": "#/components/parameters/SearchFilter" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" }
+                    {
+                        "$ref": "#/components/parameters/ItemFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Issue results",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/IssuesResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/IssuesListResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
@@ -525,28 +799,44 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    }
                 }
             }
         },
         "/monitoring/details/issues/{item-name}": {
             "get": {
-                "tags": ["issues"],
+                "tags": [
+                    "issues"
+                ],
                 "summary": "Get issues for a single item, including its children",
                 "description": "Shorthand for `/monitoring/details/issues?name={item-name}`. Returns issues recorded against the item itself, together with a `children` array covering each of its children in the same call. Use `name` and/or `search` to filter which children are included.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemNamePath" },
-                    { "$ref": "#/components/parameters/ChildFilter" },
-                    { "$ref": "#/components/parameters/SearchFilter" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" }
+                    {
+                        "$ref": "#/components/parameters/ItemNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ChildFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Issue results for the item and its children",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/IssuesResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/IssuesItemResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
@@ -582,28 +872,44 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" },
-                    "404": { "$ref": "#/components/responses/NotFound" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
                 }
             }
         },
         "/monitoring/details/issues/{item-name}/children/{child-name}": {
             "get": {
-                "tags": ["issues"],
+                "tags": [
+                    "issues"
+                ],
                 "summary": "Get issues for a single child",
                 "description": "Shorthand for `/monitoring/details/issues/{item-name}?name={child-name}`, returning only that child's entry.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemNamePath" },
-                    { "$ref": "#/components/parameters/ChildNamePath" },
-                    { "$ref": "#/components/parameters/StartDate" },
-                    { "$ref": "#/components/parameters/EndDate" }
+                    {
+                        "$ref": "#/components/parameters/ItemNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ChildNamePath"
+                    },
+                    {
+                        "$ref": "#/components/parameters/StartDate"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EndDate"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Issue results for the child",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/IssuesResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/IssuesListResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
@@ -624,39 +930,57 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" },
-                    "404": { "$ref": "#/components/responses/NotFound" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
                 }
             }
         },
         "/monitoring/summary": {
             "get": {
-                "tags": ["summary"],
+                "tags": [
+                    "summary"
+                ],
                 "summary": "List summary across multiple items",
                 "description": "Returns a combined at-a-glance view (current status, current metrics, active/recent downtimes and issues) for all top-level items, or a filtered subset via `item` and/or `search`.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemFilter" },
-                    { "$ref": "#/components/parameters/SearchFilter" }
+                    {
+                        "$ref": "#/components/parameters/ItemFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchFilter"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Summary results",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/SummaryResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/SummaryResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
                                             "name": "argo-mon",
                                             "status": "OK",
-                                            "metrics": { "availability": 100, "uptime": 99 },
+                                            "metrics": {
+                                                "availability": 100,
+                                                "uptime": 99
+                                            },
                                             "downtimes": [],
                                             "issues": []
                                         },
                                         {
                                             "name": "argo-msg",
                                             "status": "DEGRADED",
-                                            "metrics": { "availability": 100, "uptime": 97.2 },
+                                            "metrics": {
+                                                "availability": 100,
+                                                "uptime": 97.2
+                                            },
                                             "downtimes": [],
                                             "issues": [
                                                 {
@@ -672,7 +996,10 @@
                                         {
                                             "name": "argo-acc",
                                             "status": "OK",
-                                            "metrics": { "availability": 100, "uptime": 99.9 },
+                                            "metrics": {
+                                                "availability": 100,
+                                                "uptime": 99.9
+                                            },
                                             "downtimes": [],
                                             "issues": []
                                         }
@@ -681,30 +1008,41 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    }
                 }
             }
         },
         "/monitoring/summary/{item-name}": {
             "get": {
-                "tags": ["summary"],
+                "tags": [
+                    "summary"
+                ],
                 "summary": "Get summary for a single item",
                 "description": "Shorthand for `/monitoring/summary?name={item-name}`. Returns a combined at-a-glance view (current status, current metrics, active/recent downtimes and issues) for the item.\n",
                 "parameters": [
-                    { "$ref": "#/components/parameters/ItemNamePath" }
+                    {
+                        "$ref": "#/components/parameters/ItemNamePath"
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Summary result for the item",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/SummaryResponse" },
+                                "schema": {
+                                    "$ref": "#/components/schemas/SummaryResponse"
+                                },
                                 "example": {
                                     "data": [
                                         {
                                             "name": "argo-mon",
                                             "status": "OK",
-                                            "metrics": { "availability": 100, "uptime": 99 },
+                                            "metrics": {
+                                                "availability": 100,
+                                                "uptime": 99
+                                            },
                                             "downtimes": [],
                                             "issues": []
                                         }
@@ -713,8 +1051,12 @@
                             }
                         }
                     },
-                    "400": { "$ref": "#/components/responses/BadRequest" },
-                    "404": { "$ref": "#/components/responses/NotFound" }
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
                 }
             }
         }
@@ -728,7 +1070,11 @@
                 "description": "Identifier of the top-level monitored item.",
                 "schema": {
                     "type": "string",
-                    "enum": ["argo-mon", "argo-msg", "argo-acc"]
+                    "enum": [
+                        "argo-mon",
+                        "argo-msg",
+                        "argo-acc"
+                    ]
                 },
                 "example": "argo-mon"
             },
@@ -737,7 +1083,9 @@
                 "in": "path",
                 "required": true,
                 "description": "Identifier of the child, scoped to the parent `item-name` in the path.",
-                "schema": { "type": "string" },
+                "schema": {
+                    "type": "string"
+                },
                 "example": "argo-mon-ui"
             },
             "ItemFilter": {
@@ -749,9 +1097,15 @@
                 "explode": true,
                 "schema": {
                     "type": "array",
-                    "items": { "type": "string" }
+                    "items": {
+                        "type": "string"
+                    }
                 },
-                "example": ["argo-mon", "argo-msg", "argo-acc"]
+                "example": [
+                    "argo-mon",
+                    "argo-msg",
+                    "argo-acc"
+                ]
             },
             "ChildFilter": {
                 "name": "name",
@@ -762,16 +1116,23 @@
                 "explode": true,
                 "schema": {
                     "type": "array",
-                    "items": { "type": "string" }
+                    "items": {
+                        "type": "string"
+                    }
                 },
-                "example": ["argo-mon-ui", "argo-mon-api"]
+                "example": [
+                    "argo-mon-ui",
+                    "argo-mon-api"
+                ]
             },
             "SearchFilter": {
                 "name": "search",
                 "in": "query",
                 "required": false,
                 "description": "Substring match on item or child name (fuzzy search, not exact).",
-                "schema": { "type": "string" },
+                "schema": {
+                    "type": "string"
+                },
                 "example": "argo"
             },
             "Date": {
@@ -779,7 +1140,10 @@
                 "in": "query",
                 "required": false,
                 "description": "A single date to query. Mutually exclusive with `start-date` / `end-date`.\n",
-                "schema": { "type": "string", "format": "date" },
+                "schema": {
+                    "type": "string",
+                    "format": "date"
+                },
                 "example": "2026-06-01"
             },
             "StartDate": {
@@ -787,7 +1151,10 @@
                 "in": "query",
                 "required": false,
                 "description": "Start of a date range. Must be supplied together with `end-date`. Mutually exclusive with `date`.\n",
-                "schema": { "type": "string", "format": "date" },
+                "schema": {
+                    "type": "string",
+                    "format": "date"
+                },
                 "example": "2026-06-01"
             },
             "EndDate": {
@@ -795,7 +1162,10 @@
                 "in": "query",
                 "required": false,
                 "description": "End of a date range. Must be supplied together with `start-date`. Mutually exclusive with `date`.\n",
-                "schema": { "type": "string", "format": "date" },
+                "schema": {
+                    "type": "string",
+                    "format": "date"
+                },
                 "example": "2026-06-30"
             },
             "Granularity": {
@@ -805,7 +1175,10 @@
                 "description": "Aggregation interval for range queries. Applies only to metrics routes; not supported on status/downtimes/issues routes.\n",
                 "schema": {
                     "type": "string",
-                    "enum": ["daily", "monthly"]
+                    "enum": [
+                        "daily",
+                        "monthly"
+                    ]
                 }
             },
             "MetricFilter": {
@@ -819,41 +1192,19 @@
                     "type": "array",
                     "items": {
                         "type": "string",
-                        "enum": ["availability", "uptime"]
+                        "enum": [
+                            "availability",
+                            "uptime"
+                        ]
                     }
                 },
-                "example": ["availability", "uptime"]
+                "example": [
+                    "availability",
+                    "uptime"
+                ]
             }
         },
         "schemas": {
-            "MetricsResponse": {
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": { "$ref": "#/components/schemas/MetricsEntry" }
-                    }
-                }
-            },
-            "MetricsEntry": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Identifier of the item or child these results belong to.",
-                        "example": "argo-mon"
-                    },
-                    "results": {
-                        "type": "array",
-                        "items": { "$ref": "#/components/schemas/MetricResult" }
-                    },
-                    "children": {
-                        "type": "array",
-                        "description": "Present only on item-level responses. Metrics for each of the item's children, returned in the same call.\n",
-                        "items": { "$ref": "#/components/schemas/MetricsChildEntry" }
-                    }
-                }
-            },
             "MetricsChildEntry": {
                 "type": "object",
                 "properties": {
@@ -864,14 +1215,20 @@
                     },
                     "results": {
                         "type": "array",
-                        "items": { "$ref": "#/components/schemas/MetricResult" }
+                        "items": {
+                            "$ref": "#/components/schemas/MetricResult"
+                        }
                     }
                 }
             },
             "MetricResult": {
                 "type": "object",
                 "properties": {
-                    "date": { "type": "string", "format": "date", "example": "2026-07-02" },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-07-02"
+                    },
                     "availability": {
                         "type": "number",
                         "format": "double",
@@ -886,35 +1243,6 @@
                     }
                 }
             },
-            "StatusResponse": {
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": { "$ref": "#/components/schemas/StatusEntry" }
-                    }
-                }
-            },
-            "StatusEntry": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Identifier of the item or child these results belong to.",
-                        "example": "argo-mon"
-                    },
-                    "results": {
-                        "type": "array",
-                        "description": "A single entry when no date range is given (current state), or multiple entries ordered by timestamp when `start-date`/`end-date` is given (status timeline).\n",
-                        "items": { "$ref": "#/components/schemas/StatusResult" }
-                    },
-                    "children": {
-                        "type": "array",
-                        "description": "Present only on item-level responses. Status for each of the item's children, returned in the same call.\n",
-                        "items": { "$ref": "#/components/schemas/StatusChildEntry" }
-                    }
-                }
-            },
             "StatusChildEntry": {
                 "type": "object",
                 "properties": {
@@ -925,46 +1253,29 @@
                     },
                     "results": {
                         "type": "array",
-                        "items": { "$ref": "#/components/schemas/StatusResult" }
+                        "items": {
+                            "$ref": "#/components/schemas/StatusResult"
+                        }
                     }
                 }
             },
             "StatusResult": {
                 "type": "object",
                 "properties": {
-                    "timestamp": { "type": "string", "format": "date-time", "example": "2026-07-02T06:49:32Z" },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-07-02T06:49:32Z"
+                    },
                     "state": {
                         "type": "string",
-                        "enum": ["OK", "DEGRADED", "DOWN", "UNKNOWN"],
+                        "enum": [
+                            "OK",
+                            "DEGRADED",
+                            "DOWN",
+                            "UNKNOWN"
+                        ],
                         "example": "OK"
-                    }
-                }
-            },
-            "DowntimesResponse": {
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": { "$ref": "#/components/schemas/DowntimesEntry" }
-                    }
-                }
-            },
-            "DowntimesEntry": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Identifier of the item or child these results belong to.",
-                        "example": "argo-mon"
-                    },
-                    "results": {
-                        "type": "array",
-                        "items": { "$ref": "#/components/schemas/DowntimeResult" }
-                    },
-                    "children": {
-                        "type": "array",
-                        "description": "Present only on item-level responses. Downtimes for each of the item's children, returned in the same call.\n",
-                        "items": { "$ref": "#/components/schemas/DowntimesChildEntry" }
                     }
                 }
             },
@@ -978,7 +1289,9 @@
                     },
                     "results": {
                         "type": "array",
-                        "items": { "$ref": "#/components/schemas/DowntimeResult" }
+                        "items": {
+                            "$ref": "#/components/schemas/DowntimeResult"
+                        }
                     }
                 }
             },
@@ -990,36 +1303,19 @@
                         "description": "Short name/title of the downtime window.",
                         "example": "Scheduled maintenance"
                     },
-                    "description": { "type": "string", "example": "Database upgrade window" },
-                    "start-time": { "type": "string", "format": "date-time", "example": "2026-06-28T02:00:00Z" },
-                    "end-time": { "type": "string", "format": "date-time", "example": "2026-06-28T04:00:00Z" }
-                }
-            },
-            "IssuesResponse": {
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": { "$ref": "#/components/schemas/IssuesEntry" }
-                    }
-                }
-            },
-            "IssuesEntry": {
-                "type": "object",
-                "properties": {
-                    "name": {
+                    "description": {
                         "type": "string",
-                        "description": "Identifier of the item or child these results belong to.",
-                        "example": "argo-mon"
+                        "example": "Database upgrade window"
                     },
-                    "results": {
-                        "type": "array",
-                        "items": { "$ref": "#/components/schemas/IssueResult" }
+                    "start-time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-06-28T02:00:00Z"
                     },
-                    "children": {
-                        "type": "array",
-                        "description": "Present only on item-level responses. Issues for each of the item's children, returned in the same call.\n",
-                        "items": { "$ref": "#/components/schemas/IssuesChildEntry" }
+                    "end-time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-06-28T04:00:00Z"
                     }
                 }
             },
@@ -1033,7 +1329,9 @@
                     },
                     "results": {
                         "type": "array",
-                        "items": { "$ref": "#/components/schemas/IssueResult" }
+                        "items": {
+                            "$ref": "#/components/schemas/IssueResult"
+                        }
                     }
                 }
             },
@@ -1045,9 +1343,19 @@
                         "description": "Short name/title of the issue.",
                         "example": "High latency"
                     },
-                    "timestamp": { "type": "string", "format": "date-time", "example": "2026-07-01T14:22:10Z" },
-                    "hostname": { "type": "string", "example": "argo-mon-api-03" },
-                    "service": { "type": "string", "example": "argo-mon-api" },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-07-01T14:22:10Z"
+                    },
+                    "hostname": {
+                        "type": "string",
+                        "example": "argo-mon-api-03"
+                    },
+                    "service": {
+                        "type": "string",
+                        "example": "argo-mon-api"
+                    },
                     "message": {
                         "type": "string",
                         "description": "Raw log/alert message associated with the issue.",
@@ -1065,7 +1373,9 @@
                 "properties": {
                     "data": {
                         "type": "array",
-                        "items": { "$ref": "#/components/schemas/ItemSummary" }
+                        "items": {
+                            "$ref": "#/components/schemas/ItemSummary"
+                        }
                     }
                 }
             },
@@ -1080,19 +1390,30 @@
                     "status": {
                         "type": "string",
                         "description": "Current status of the item.",
-                        "enum": ["OK", "DEGRADED", "DOWN", "UNKNOWN"],
+                        "enum": [
+                            "OK",
+                            "DEGRADED",
+                            "DOWN",
+                            "UNKNOWN"
+                        ],
                         "example": "OK"
                     },
-                    "metrics": { "$ref": "#/components/schemas/SummaryMetrics" },
+                    "metrics": {
+                        "$ref": "#/components/schemas/SummaryMetrics"
+                    },
                     "downtimes": {
                         "type": "array",
                         "description": "Active or recent downtime windows for the item.",
-                        "items": { "$ref": "#/components/schemas/DowntimeResult" }
+                        "items": {
+                            "$ref": "#/components/schemas/DowntimeResult"
+                        }
                     },
                     "issues": {
                         "type": "array",
                         "description": "Active or recent issues for the item.",
-                        "items": { "$ref": "#/components/schemas/IssueResult" }
+                        "items": {
+                            "$ref": "#/components/schemas/IssueResult"
+                        }
                     }
                 }
             },
@@ -1116,8 +1437,192 @@
             "Error": {
                 "type": "object",
                 "properties": {
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "message": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    }
+                }
+            },
+            "MetricsItemEntry": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Identifier of the item.",
+                        "example": "argo-mon"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MetricResult"
+                        }
+                    },
+                    "children": {
+                        "type": "array",
+                        "description": "Results for each of the item's children, returned in the same call.\n",
+                        "items": {
+                            "$ref": "#/components/schemas/MetricsChildEntry"
+                        }
+                    }
+                }
+            },
+            "MetricsListResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MetricsChildEntry"
+                        }
+                    }
+                }
+            },
+            "MetricsItemResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MetricsItemEntry"
+                        }
+                    }
+                }
+            },
+            "StatusItemEntry": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Identifier of the item.",
+                        "example": "argo-mon"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StatusResult"
+                        }
+                    },
+                    "children": {
+                        "type": "array",
+                        "description": "Results for each of the item's children, returned in the same call.\n",
+                        "items": {
+                            "$ref": "#/components/schemas/StatusChildEntry"
+                        }
+                    }
+                }
+            },
+            "StatusListResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StatusChildEntry"
+                        }
+                    }
+                }
+            },
+            "StatusItemResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StatusItemEntry"
+                        }
+                    }
+                }
+            },
+            "DowntimesItemEntry": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Identifier of the item.",
+                        "example": "argo-mon"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DowntimeResult"
+                        }
+                    },
+                    "children": {
+                        "type": "array",
+                        "description": "Results for each of the item's children, returned in the same call.\n",
+                        "items": {
+                            "$ref": "#/components/schemas/DowntimesChildEntry"
+                        }
+                    }
+                }
+            },
+            "DowntimesListResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DowntimesChildEntry"
+                        }
+                    }
+                }
+            },
+            "DowntimesItemResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DowntimesItemEntry"
+                        }
+                    }
+                }
+            },
+            "IssuesItemEntry": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Identifier of the item.",
+                        "example": "argo-mon"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IssueResult"
+                        }
+                    },
+                    "children": {
+                        "type": "array",
+                        "description": "Results for each of the item's children, returned in the same call.\n",
+                        "items": {
+                            "$ref": "#/components/schemas/IssuesChildEntry"
+                        }
+                    }
+                }
+            },
+            "IssuesListResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IssuesChildEntry"
+                        }
+                    }
+                }
+            },
+            "IssuesItemResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IssuesItemEntry"
+                        }
+                    }
                 }
             }
         },
@@ -1126,7 +1631,9 @@
                 "description": "Invalid parameter combination (e.g. both `date` and `start-date` supplied, or `start-date` without `end-date`).\n",
                 "content": {
                     "application/json": {
-                        "schema": { "$ref": "#/components/schemas/Error" }
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
                     }
                 }
             },
@@ -1134,7 +1641,9 @@
                 "description": "Item or child not found.",
                 "content": {
                     "application/json": {
-                        "schema": { "$ref": "#/components/schemas/Error" }
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
                     }
                 }
             }
